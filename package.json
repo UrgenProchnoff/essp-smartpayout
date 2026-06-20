@@ -1,0 +1,47 @@
+{
+  "name": "essp-smartpayout",
+  "version": "1.0.0",
+  "description": "Node.js driver for Innovative Technology SMART Payout / NV200 / NV11 banknote validators over the encrypted eSSP serial protocol.",
+  "main": "module_smartpayout.js",
+  "scripts": {
+    "build": "babel module_smartpayout.js lib --out-dir dist --copy-files",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "essp",
+    "ssp",
+    "smartpayout",
+    "nv200",
+    "nv11",
+    "banknote",
+    "bill-validator",
+    "innovative-technology",
+    "serialport"
+  ],
+  "author": "Evgenii Polomannyi <urgproch@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/urgproch/essp-smartpayout.git"
+  },
+  "dependencies": {
+    "@serialport/parser-inter-byte-timeout": "^1.1.0",
+    "aes-js": "^3.1.0",
+    "big-integer": "^1.6.26",
+    "bit-converter": "^1.0.0",
+    "chalk": "^2.3.1",
+    "convert-hex": "^0.1.0",
+    "event-emitter-es6": "^1.1.5",
+    "hex2ascii": "0.0.3",
+    "moment": "^2.20.1",
+    "node-forge": "^1.3.1",
+    "serialport": "^7.1.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/preset-env": "^7.6.3",
+    "nodemon": "^1.19.3"
+  }
+}
