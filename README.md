@@ -29,7 +29,7 @@ exposes a high-level, event-driven API for accepting and dispensing notes.
 ## Installation
 
 ```bash
-git clone https://github.com/urgproch/essp-smartpayout.git
+git clone https://github.com/UrgenProchnoff/essp-smartpayout.git
 cd essp-smartpayout
 npm install
 ```
