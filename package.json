@@ -5,6 +5,7 @@
   "main": "module_smartpayout.js",
   "scripts": {
     "build": "babel module_smartpayout.js lib --out-dir dist --copy-files",
+    "example": "babel-node examples/device-info.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

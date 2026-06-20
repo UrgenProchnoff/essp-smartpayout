@@ -86,6 +86,24 @@ Because the source uses ES modules, run it through Babel, e.g.:
 npx babel-node example.js
 ```
 
+## Examples
+
+Runnable examples live in [examples/](examples/). They require a real device
+on a serial port (set via the `ESSP_DEVICE` environment variable):
+
+```bash
+# Read-only: serial number, setup, stored levels (safest to run first)
+ESSP_DEVICE=/dev/ttyACM0 npx babel-node examples/device-info.js
+
+# Accept an inserted note
+ESSP_DEVICE=/dev/ttyACM0 npx babel-node examples/accept-note.js
+
+# Dispense notes (this physically pays out cash)
+ESSP_DEVICE=/dev/ttyACM0 NOMINAL=100 COUNT=1 npx babel-node examples/dispense-note.js
+```
+
+`npm run example` runs the read-only `device-info` example.
+
 ## High-level API (`SMARTPAYOUT`)
 
 | Method | Description |
