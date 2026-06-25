@@ -11,6 +11,11 @@ exposes a high-level, event-driven API for accepting and dispensing notes.
 > ⚠️ This library talks to real cash-handling hardware over a serial port.
 > Test against a device you control, in a safe environment.
 
+> 🧪 **Status:** the protocol logic is unchanged from production use, but the
+> migration to `serialport` v13 has **not yet been verified on real hardware**.
+> If you have a device, testing and feedback are very welcome. Pin an earlier
+> version if you need the previously hardware-tested `serialport` v7 code path.
+
 ## Features
 
 - Full eSSP encrypted-link setup (generator/modulus/key exchange, AES-ECB).

@@ -1,6 +1,6 @@
 {
   "name": "essp-smartpayout",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Node.js driver for Innovative Technology SMART Payout / NV200 / NV11 banknote validators over the encrypted eSSP serial protocol.",
   "main": "dist/module_smartpayout.js",
   "files": [
