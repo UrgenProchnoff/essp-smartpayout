@@ -22,16 +22,29 @@ exposes a high-level, event-driven API for accepting and dispensing notes.
 
 ## Requirements
 
-- Node.js with Babel (the source uses ES module `import`/`export`).
+- Node.js **>= 20** (required by `serialport` v13).
 - A serial connection to the device (e.g. `/dev/ttyACM0`, `/dev/ttyUSB0`).
-- Built on `serialport` v7.
+- Built on `serialport` v13.
 
 ## Installation
+
+From npm:
+
+```bash
+npm install essp-smartpayout
+```
+
+```js
+const SMARTPAYOUT = require('essp-smartpayout');
+```
+
+Or from source (uses Babel, since the source is written as ES modules):
 
 ```bash
 git clone https://github.com/UrgenProchnoff/essp-smartpayout.git
 cd essp-smartpayout
 npm install
+npm run build   # compiles to dist/
 ```
 
 ## Usage
