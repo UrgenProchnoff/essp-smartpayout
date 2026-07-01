@@ -1,9 +1,8 @@
 /**
  * Accept (take in) banknotes.
  *
- * Enables the validator for the device's own currency and runs the poll
- * loop. When a note is credited, the `take_note` event fires with the
- * note nominal.
+ * Enables the validator and runs the poll loop. When a note is credited,
+ * the `take_note` event fires with the note nominal.
  *
  * Run with Babel:
  *   ESSP_DEVICE=/dev/ttyACM0 npx babel-node examples/accept-note.js
@@ -33,12 +32,13 @@ async function main() {
 
   await payout.Init();
 
-  // Read setup so we know which currency codes to accept.
+  // Read setup first: takeNote() needs the channel denominations.
   const setup = await payout.getSetup();
   console.log('Accepting currency:', setup.currency);
 
-  // Enable acceptance for the device's currency.
-  await payout.takeNote(setup.currency_code);
+  // Accept all denominations. To restrict, pass an array of nominals,
+  // e.g. payout.takeNote([100, 500]).
+  await payout.takeNote();
 
   // Poll the device while the transaction is active.
   // `pool()` returns once a note is taken (it clears the pool flag).

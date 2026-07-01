@@ -76,8 +76,9 @@ async function main() {
   console.log('serial', await payout.getSerialNumber());
   console.log('levels', await payout.getAllLevels());
 
-  // Accept notes (array selects acceptable currency codes).
-  await payout.takeNote(setup.currency_code);
+  // Accept notes. Pass an array of nominals (e.g. [100, 500]) to accept
+  // only those denominations, or call without arguments to accept all.
+  await payout.takeNote();
 
   // Run the poll loop while a transaction is active.
   await payout.pool();
@@ -132,7 +133,7 @@ ESSP_DEVICE=/dev/ttyACM0 NOMINAL=100 COUNT=1 npx babel-node examples/dispense-no
 | `getSerialNumber()` | Return the device serial number. |
 | `getAllLevels()` | Return stored note levels per denomination. |
 | `setDenominationRoute(arr)` | Route each denomination to payout store or cashbox. |
-| `takeNote(codes)` | Enable acceptance for the given currency codes. |
+| `takeNote(nominals?)` | Enable note acceptance. Optional array of note values restricts accepted denominations; omit to accept all. |
 | `dispenseNote([nominal, count])` | Pay out `count` notes of `nominal`. |
 | `pool()` | Poll the device while a transaction is in progress. |
 | `display_on()` / `display_off()` | Toggle the bezel light. |
@@ -146,7 +147,7 @@ emits the full protocol event set, including: `ready`, `read_note`,
 `credit_note`, `note_rejecting`, `note_stacking`, `note_stacked`,
 `note_rejected`, `safe_note_jam`, `unsafe_note_jam`, `fraud_attempt`,
 `stacker_full`, `cashbox_removed`, `cashbox_replaced`, `dispensing`,
-`dispensed`, `jammed`, `incomplete_payout`, `emptying`, `emptied`,
+`dispensed`, `jammed`, `incomplete_payout`, `incomplete_float`, `emptying`, `emptied`,
 `note_stored_in_payout`, `payout_out_of_service`, `jam_recovery`,
 `error_during_payout`, and more.
 
