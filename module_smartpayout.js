@@ -74,6 +74,7 @@ export default class SMARTPAYOUT extends EventEmitter {
       //await esspInstance.poll()
       //await esspInstance.func_timeout2 ()
       console.log ('ready');
+      this.emit ('ready');
     });
     esspInstance.on ('note_rejected', reason => {
       console.log ('Rejected!', reason);
@@ -189,6 +190,11 @@ export default class SMARTPAYOUT extends EventEmitter {
       let event = ['error', { code: 3, message: 'incomplete_payout', },];
       this.emit.apply (this, event);
     });
+    esspInstance.on ('incomplete_float', note => {
+      console.log ('incomplete_float', note);
+      let event = ['error', { code: 3, message: 'incomplete_float', },];
+      this.emit.apply (this, event);
+    });
     esspInstance.on ('emptying', () => {
       console.log ('emptying');
     });
@@ -270,22 +276,6 @@ export default class SMARTPAYOUT extends EventEmitter {
     });
    
 
-    process.on ('SIGINT',  () => {
-      process.exit (0);
-    });
-    
-    process.on ('uncaughtException', err => {
-      console.log (err.stack);
-      setTimeout (function () {
-        process.exit (1);
-      }, 500);
-    });
-    
-    process.on ('exit', () => {
-      //this.esspInstance.port && this.esspInstance.port.isOpened && this.esspInstance.disable ();
-    });
-  
-  
   }
 
   async   Init () {
@@ -325,23 +315,22 @@ export default class SMARTPAYOUT extends EventEmitter {
 
   }
 
-  async promis_command(flag, prop) {
+  async promis_command(flag, prop, timeout = 10000) {
     return new Promise((resolve, reject) => {
+      let waited = 0;
       let interval = setInterval(() => {
-        //console.log('flag=', flag);
         if (flag[prop] == 1) {
-          //console.log('promis command resolve'); 
           clearInterval(interval);
           resolve(true);
         }
         else {
-          //let d = new Date();
-          //console.log('promis command not resolve flag=', flag);
-          //console.log ('time', d.getTime())
+          waited += 100;
+          if (waited >= timeout) {
+            clearInterval(interval);
+            reject(new Error('Timeout waiting for ' + prop + ' response'));
+          }
         }
       }, 100);
-      //console.log('promis command reject');
-      //reject(true); 
     });
   }
 
@@ -356,7 +345,7 @@ export default class SMARTPAYOUT extends EventEmitter {
       out_route_array = out_route_array
         .concat (
           this.esspInstance.parseHexString (
-            (this.all_nominals[i] * 100).toString (16),
+            (this.all_nominals[i] * this.setup.valueMultiplier).toString (16),
             4
           )
         )
@@ -369,16 +358,19 @@ export default class SMARTPAYOUT extends EventEmitter {
   }
   
 
-  async takeNote(num_in) {
-    console.log('num_in=', num_in);
-    //console.log('this.setup.CoinTypeCredit=', this.setup.CoinTypeCredit);
-    let num = [0, 0, 0, 0, 0, 0, 0, 0]; // use 8 coin nominals
-    for (let i = 0; i < num.length; i++) {
-      for (let j = 0; j < num_in.length; j++) {
-        if (this.setup.currency_code[i] == num_in[j]) num[i] = 1;
+  async takeNote(nominals) {
+    // nominals: optional array of note values to accept (e.g. [100, 500]);
+    // omit (or pass an empty array) to accept every denomination
+    let inhibit_mask = [0xff, 0xff];
+    if (Array.isArray(nominals) && nominals.length > 0) {
+      inhibit_mask = [0x00, 0x00];
+      for (let i = 0; i < this.all_nominals.length && i < 16; i++) {
+        if (nominals.indexOf(this.all_nominals[i]) > -1) {
+          inhibit_mask[Math.floor(i / 8)] |= 1 << i % 8;
+        }
       }
     }
-    console.log('num=', num);
+    console.log('inhibit_mask=', inhibit_mask);
     this.flag.takenote = 0;
     this.takenote = null;
     await this.esspInstance.func_timeout2 ();
@@ -388,7 +380,7 @@ export default class SMARTPAYOUT extends EventEmitter {
     await this.esspInstance.func_timeout2 ();
     await this.esspInstance.poll ();
     await this.esspInstance.func_timeout2 ();
-    await this.esspInstance.setInhibit ([0xff, 0xff]);
+    await this.esspInstance.setInhibit (inhibit_mask);
     await this.esspInstance.func_timeout2 ();
     await this.esspInstance.all_enable ();
     await this.esspInstance.func_timeout2 ();  
@@ -500,8 +492,8 @@ export default class SMARTPAYOUT extends EventEmitter {
     return 1;
   }
 
-  async pool(time) { // ms
-    
+  async pool() {
+
 //      let count = 0;
       let i = 0;
       while (i < 400 && this.flag.pool == 1) {
